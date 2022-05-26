@@ -23,3 +23,19 @@ sudo nano traffic_light.py
 python3 traffic_light.py
 ```
 ## 人感センサの利用  
+配線図通り配線出来たら以下を実行  
+```
+python3 motion.py
+```
+## スピーカの利用  
+配線を組めたら以下を実行し、ファイルの編集を行う  
+```
+sudo nano speaker.py
+```
+ソースのヒントはLチカのソースが参考になるため、画面共有でＬチカのソースを見せる  
+
+## アラームシステムの作成  
+配線を組めたら以下を実行し、ファイルの編集を行う  
+```
+sudo nano alert.py
+```
