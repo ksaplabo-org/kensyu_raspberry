@@ -63,6 +63,10 @@ sudo python3 ./DHT11_Python/example.py
 ```
 
 ## 温湿度センサの情報をディスプレイに表示  
+ディスプレイを使用するためのライブラリを取得  
+```
+pip3 install adafruit-circuitpython-ssd1306
+```
 配線を組めたら、配線が正しいか以下のコマンドで確認する  
 ```
 i2cdetect -y 1
