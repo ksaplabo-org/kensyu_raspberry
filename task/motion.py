@@ -10,9 +10,7 @@ GPIO.setup(PIN_IN, GPIO.IN)
 try:
   #繰り返す
   while True:
-    #現在のPIN状態を標準出力
-    print(GPIO.input(PIN_IN))
-
+    
     if GPIO.input(PIN_IN) == 1:
         print("HIGH")
     else:
