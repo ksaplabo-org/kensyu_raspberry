@@ -89,32 +89,6 @@ sudo rm -rf ./DHT11_Python
 
 ## 温湿度センサの情報をディスプレイに表示  
 
-配線を組めたら、配線が正しいか以下のコマンドで確認する  
-```
-i2cdetect -y 1
-```
-以下のコマンドで実行する  
-```
-python3 lcd_display.py
-```
-
-↓これは自分で試したやつなので、後で削除する  
-実行したらエラーが出たので以下をインポート  
-エラー：No module named 'board
-```
-sudo pip3 install adafruit-blinka
-```
-更にエラーが出たので
-ディスプレイを使用するためのライブラリを取得  
-エラー：No module named 'adafruit_ssd1306'
-```
-sudo pip3 install adafruit-circuitpython-ssd1306
-```
-最終的に以下のエラーが出た  
-connot_open resource
-確かにこのソースの11行目で指定しているパスにこのフォルダは存在しない  
-/usr/share/fonts/opentype/noto/NotoSansCJK-Regular.ttc
-
 SSD1306用のドライバのインストール  
 ```
 pip3 install adafruit-circuitpython-ssd1306 
@@ -126,7 +100,22 @@ pip3 install board
 これだけだとまだエラーが出るので、こちらを試して見る  
 ```
 pip3 install adafruit-blinka
+```
+```
 python3 -m pip install --force-reinstall adafruit-blinka
+```
+```
 sudo apt-get install fonts-noto
 ```
 最後のやつが15分くらいかかった
+
+配線を組めたら、配線が正しいか以下のコマンドで確認する  
+```
+i2cdetect -y 1
+```
+以下のコマンドで実行する  
+```
+python3 lcd_display.py
+```
+
+
