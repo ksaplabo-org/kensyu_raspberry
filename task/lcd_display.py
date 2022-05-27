@@ -1,4 +1,5 @@
 import RPi.GPIO as GPIO
+import dht11
 import time
 import datetime
 import asyncio
@@ -14,18 +15,27 @@ FONT_SANS_12 = ImageFont.truetype("/usr/share/fonts/opentype/noto/NotoSansCJK-Re
 GPIO.setwarnings(True)
 GPIO.setmode(GPIO.BCM)
 
+# read data using pin 14
+instance = dht11.DHT11(pin=14)
+
 # Publish Loop
 async def pub_loop():
     while True:
         tm = datetime.datetime.now()
         tmstr = "{0:%Y-%m-%d %H:%M:%S}".format(tm)
+        result = instance.read()
 
-        print("datetime:" + tmstr)
+        if result.is_valid():
+            temp_val = result.temperature
+            humi_val = result.humidity
+
+        print("datetime:" + tmstr + " Temperature: %-3.1f C" % temp_val + " Humidity: %-3.1f %%" % humi_val)
 
         # draw image
         img = Image.new("1",(display.width, display.height))
         draw = ImageDraw.Draw(img)
         draw.text((0,0),'時刻 ' + tm.strftime('%H:%M:%S'),font=FONT_SANS_12,fill=1)
+        
 
         display.image(img)
         display.show()

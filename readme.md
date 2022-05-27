@@ -59,14 +59,36 @@ sudo git clone https://github.com/szazo/DHT11_Python.git
 ```
 配線を組めたら以下を実行  
 ```
-sudo python3 ./DHT11_Python/example.py
+python3 ./DHT11_Python/example.py
+```
+
+## DHT11ライブラリの移動
+以下の順番でコマンドを実行する
+・サンプルをコピー
+```
+sudo cp ./DHT11_Python/example.py ./aircond.py
+```
+・gitファイいる削除
+```
+cd DHT11_Python
+```
+```
+rm -rf .git
+```
+・ライブラリ本体のフォルダをひとつ上に移動
+```
+cd ..
+```
+```
+sudo mv -f ./DHT11_Python/dht11/ ./dht11
+```
+・不要フォルダの削除
+```
+sudo rm -rf ./DHT11_Python
 ```
 
 ## 温湿度センサの情報をディスプレイに表示  
-ディスプレイを使用するためのライブラリを取得  
-```
-pip3 install adafruit-circuitpython-ssd1306
-```
+
 配線を組めたら、配線が正しいか以下のコマンドで確認する  
 ```
 i2cdetect -y 1
@@ -75,3 +97,36 @@ i2cdetect -y 1
 ```
 python3 lcd_display.py
 ```
+
+↓これは自分で試したやつなので、後で削除する  
+実行したらエラーが出たので以下をインポート  
+エラー：No module named 'board
+```
+sudo pip3 install adafruit-blinka
+```
+更にエラーが出たので
+ディスプレイを使用するためのライブラリを取得  
+エラー：No module named 'adafruit_ssd1306'
+```
+sudo pip3 install adafruit-circuitpython-ssd1306
+```
+最終的に以下のエラーが出た  
+connot_open resource
+確かにこのソースの11行目で指定しているパスにこのフォルダは存在しない  
+/usr/share/fonts/opentype/noto/NotoSansCJK-Regular.ttc
+
+SSD1306用のドライバのインストール  
+```
+pip3 install adafruit-circuitpython-ssd1306 
+```
+boardモジュールのインストール  
+```
+pip3 install board
+```
+これだけだとまだエラーが出るので、こちらを試して見る  
+```
+pip3 install adafruit-blinka
+python3 -m pip install --force-reinstall adafruit-blinka
+sudo apt-get install fonts-noto
+```
+最後のやつが15分くらいかかった
