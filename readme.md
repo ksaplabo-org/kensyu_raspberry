@@ -162,3 +162,14 @@ ID:ec2-user PW:ksaplabo
 ```
 pip3 install paho-mqtt python-etcd
 ```
+フォルダの位置を調整して、以下のコマンドでソースを編集する  
+```
+sudo nano aircondition.py
+```
+
+ここまでできたら、IotCoreのブラウザに戻り  
+「テスト」からMQTTテストクライアントを選択  
+トピックのフィルターに「topicAirCondition」を入れて
+まずソースを実行、その後にサブスクライブを押す。
+
+以上で1日目は終わり  
