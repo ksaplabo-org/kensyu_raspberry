@@ -28,7 +28,7 @@ try:
             temp_val = result.temperature
             humi_val = result.humidity
 
-        print("datetime:" + tmstr + " Temperature: %-3.1f C" % temp_val + " Humidity: %-3.1f %%" % humi_val)
+        print("datetime:" + tmstr + " Temperature: %.1f C" % temp_val + " Humidity: %.1f %%" % humi_val)
 
         # draw image
         img = Image.new("1",(display.width, display.height))
