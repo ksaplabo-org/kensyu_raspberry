@@ -2,7 +2,6 @@ import RPi.GPIO as GPIO
 import dht11
 import time
 import datetime
-import asyncio
 import board
 from adafruit_ssd1306 import SSD1306_I2C
 from PIL import Image, ImageDraw, ImageFont
@@ -18,8 +17,8 @@ GPIO.setmode(GPIO.BCM)
 # read data using pin 14
 instance = dht11.DHT11(pin=14)
 
-# Publish Loop
-async def pub_loop():
+# メイン
+try:
     while True:
         tm = datetime.datetime.now()
         tmstr = "{0:%Y-%m-%d %H:%M:%S}".format(tm)
@@ -34,21 +33,12 @@ async def pub_loop():
         # draw image
         img = Image.new("1",(display.width, display.height))
         draw = ImageDraw.Draw(img)
-        draw.text((0,0),'時刻 ' + tm.strftime('%H:%M:%S'),font=FONT_SANS_12,fill=1)
-        
+        draw.text((0,0),'時刻 ' + tm.strftime('%H:%M:%S'),font=FONT_SANS_12,fill=1)        
 
         display.image(img)
         display.show()
 
         time.sleep(1)
-
-# Main Procedure
-try:
-    if __name__ == '__main__':
-        # Start Publish Loop 
-        loop = asyncio.get_event_loop()
-        loop.run_until_complete(pub_loop())
-
 
 except KeyboardInterrupt:
     GPIO.cleanup()
