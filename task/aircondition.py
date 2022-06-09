@@ -72,7 +72,7 @@ async def pub_loop():
         display.show()
 
 		# mqtt Publish
-        if count==5:
+        if count==60:
             client.publish(MQTT_TOPIC_PUB ,json_msg)
             count=0
         
