@@ -34,7 +34,6 @@ async def pub_loop():
         img = Image.new("1",(display.width, display.height))
         draw = ImageDraw.Draw(img)
         draw.text((0,0),'時刻 ' + tm.strftime('%H:%M:%S'),font=FONT_SANS_12,fill=1)
-        draw.text((0,16),'温度 {0:.1f}℃ 湿度 {1:.1f}%'.format(float(temp_val) ,float(humi_val)) ,font=FONT_SANS_12,fill=1)
 
         display.image(img)
         display.show()
