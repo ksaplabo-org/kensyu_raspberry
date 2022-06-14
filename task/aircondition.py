@@ -57,7 +57,7 @@ async def pub_loop():
             temp_val = result.temperature
             humi_val = result.humidity
 
-        print("datetime:" + tmstr + " Temperature: %-3.1f C" % temp_val + " Humidity: %-3.1f %%" % humi_val)
+        print("datetime:" + tmstr + " Temperature: %.1f C" % temp_val + " Humidity: %.1f %%" % humi_val)
 
 		# create message
         json_msg = json.dumps({"GetDateTime": tmstr, "Temperature": temp_val,"Humidity":humi_val})
@@ -72,7 +72,7 @@ async def pub_loop():
         display.show()
 
 		# mqtt Publish
-        if count==60:
+        if count==10:
             client.publish(MQTT_TOPIC_PUB ,json_msg)
             count=0
         
