@@ -7,48 +7,53 @@ import json
 import asyncio
 import ssl
 import board
+import adafruit_ccs811
 from adafruit_ssd1306 import SSD1306_I2C
 from PIL import Image, ImageDraw, ImageFont
 
-# ディスプレイの初期処理
 i2c = board.I2C()
+ccs811 = adafruit_ccs811.CCS811(i2c)
 display = SSD1306_I2C(128, 64, board.I2C(), addr=0x3C)
+
 FONT_SANS_12 = ImageFont.truetype("/usr/share/fonts/opentype/noto/NotoSansCJK-Regular.ttc" ,12)
 FONT_SANS_18 = ImageFont.truetype("/usr/share/fonts/opentype/noto/NotoSansCJK-Regular.ttc" ,18)
 
-# GPIOの初期化
+while not ccs811.data_ready:
+    pass
+
+# initialize GPIO
 GPIO.setwarnings(True)
 GPIO.setmode(GPIO.BCM)
 
-# MQTT通信で使用する定数定義 ※ここを変更してください
-AWSIoT_ENDPOINT = "alij9rhkrwgll-ats.iot.ap-northeast-1.amazonaws.com"
+# Mqtt Define      # add
+AWSIoT_ENDPOINT = "a3ufrbqbd4cwta-ats.iot.ap-northeast-1.amazonaws.com"
 MQTT_PORT = 8883
 MQTT_TOPIC_PUB = "topicAirCondition"
 MQTT_TOPIC_SUB = "topicAirConditionSub"
 MQTT_ROOTCA = "/home/pi/Downloads/AmazonRootCA1.pem"
-MQTT_CERT = "/home/pi/Downloads/512a3534fac6e4946d4ae75ba7032248f41e898920156a0f0a68a4deb58c4f3a-certificate.pem.crt"
-MQTT_PRIKEY = "/home/pi/Downloads/512a3534fac6e4946d4ae75ba7032248f41e898920156a0f0a68a4deb58c4f3a-private.pem.key"
+MQTT_CERT = "/home/pi/Downloads/00f49476fce42f302ce80d54eb98cc8c566b3d1ff053aeca524b43fc1c39d4c5-certificate.pem.crt"
+MQTT_PRIKEY = "/home/pi/Downloads/00f49476fce42f302ce80d54eb98cc8c566b3d1ff053aeca524b43fc1c39d4c5-private.pem.key"
 
-# 温湿度センサ(DHT11)で14ピンを使うよという宣言
+# read data using pin 14
 instance = dht11.DHT11(pin=14)
 
-# MQTT接続時のイベント処理
 def mqtt_connect(client, userdata, flags, respons_code):
     print('mqtt connected.') 
     # Entry Mqtt Subscribe.
     client.subscribe(MQTT_TOPIC_SUB)
     print('subscribe topic : ' + MQTT_TOPIC_SUB) 
 
-# サブスクライブ時のイベント処理
 def mqtt_message(client, userdata, msg):
     # Get Received Json Data 
     json_dict = json.loads(msg.payload)
     # if use ... json_dict['xxx']
 
-# ループ処理
+# Publish Loop
 async def pub_loop():
     temp_val=0
     humi_val=0
+    eco2_val=0
+    tvoc_val=0
     count=0
 
     while True:
@@ -58,45 +63,49 @@ async def pub_loop():
         if result.is_valid():
             temp_val = result.temperature
             humi_val = result.humidity
+        if ccs811.data_ready:
+            eco2_val=ccs811.eco2
+            tvoc_val=ccs811.tvoc
 
-        print("datetime:" + tmstr + " Temperature: %.1f C" % temp_val + " Humidity: %.1f %%" % humi_val)
 
-		# 送信するJSONデータの作成
-        json_msg = json.dumps({"GetDateTime": tmstr, "Temperature": temp_val,"Humidity":humi_val})
+        print("datetime:" + tmstr + " Temperature: %-3.1f C" % temp_val + " Humidity: %-3.1f %%" % humi_val + " CO2: %d PPM" % eco2_val + " TVOC: %d PPB" % tvoc_val)
 
-        # 画像データの作成
+		# create message
+        json_msg = json.dumps({"GetDateTime": tmstr, "Temperature": temp_val,"Humidity":humi_val,"CO2":eco2_val,"TVOC":tvoc_val})
+
+        # draw image
         img = Image.new("1",(display.width, display.height))
         draw = ImageDraw.Draw(img)
         draw.text((0,0),'時刻 ' + tm.strftime('%H:%M:%S'),font=FONT_SANS_12,fill=1)
         draw.text((0,16),'温度 {0:.1f}℃ 湿度 {1:.1f}%'.format(float(temp_val) ,float(humi_val)) ,font=FONT_SANS_12,fill=1)
+        draw.text((0,32),'CO2 '+'{:4}'.format(eco2_val)+ ' PPM',font=FONT_SANS_12,fill=1)
+        draw.text((0,48),'TVOC '+'{:4}'.format(tvoc_val)+ ' PPB',font=FONT_SANS_12,fill=1)
 
-        # ディスプレイに表示
         display.image(img)
         display.show()
 
-		# 10秒に1回パブリッシュを行う
-        if count==10:
+		# mqtt Publish
+        if count==60:
             client.publish(MQTT_TOPIC_PUB ,json_msg)
             count=0
         
-        time.sleep(60)
+        time.sleep(1)
         count=count+1
 
-# Main処理
+# Main Procedure
 if __name__ == '__main__':
-    # Mqttクライアントの初期化
+    # Mqtt Client Initialize
     client = paho.mqtt.client.Client()
-    # コールバック関数の定義
     client.on_connect = mqtt_connect
     client.on_message = mqtt_message
     client.tls_set(MQTT_ROOTCA, certfile=MQTT_CERT, keyfile=MQTT_PRIKEY, cert_reqs=ssl.CERT_REQUIRED, tls_version=ssl.PROTOCOL_TLSv1_2, ciphers=None)
 
-    # MQTTブローカーとの接続
+    # Connect To Mqtt Broker(aws)
     client.connect(AWSIoT_ENDPOINT, port=MQTT_PORT, keepalive=60)
 
-    # 処理開始
+    # Start Mqtt Subscribe 
     client.loop_start()
 
-    # ループスタート
+    # Start Publish Loop 
     loop = asyncio.get_event_loop()
     loop.run_until_complete(pub_loop())
