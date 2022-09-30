@@ -79,7 +79,7 @@ async def pub_loop():
             client.publish(MQTT_TOPIC_PUB ,json_msg)
             count=0
         
-        time.sleep(60)
+        time.sleep(1)
         count=count+1
 
 # Main処理
