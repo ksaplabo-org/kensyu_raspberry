@@ -84,7 +84,7 @@ sudo rm -rf ./DHT11_Python
 ```
 
 ## 温湿度センサの情報をディスプレイに表示  
-
+※ライブラリのインストールは15分ほどかかるため、昼休みに実施してもらう
 SSD1306用のドライバのインストール  
 ```
 pip3 install adafruit-circuitpython-ssd1306 
