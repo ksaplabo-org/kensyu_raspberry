@@ -55,32 +55,11 @@ python3 alert.py
 ## 温湿度センサの利用  
 dht11のライブラリを取得  
 ```
-sudo git clone https://github.com/szazo/DHT11_Python.git
+pip3 install dht11
 ```
 配線を組めたら以下を実行  
 ```
-python3 ./DHT11_Python/example.py
-```
-
-## DHT11ライブラリの移動
-以下の順番でコマンドを実行する
-・gitファイいる削除
-```
-cd DHT11_Python
-```
-```
-rm -rf .git
-```
-・ライブラリ本体のフォルダをひとつ上に移動
-```
-cd ..
-```
-```
-sudo mv -f ./DHT11_Python/dht11/ ./dht11
-```
-・不要フォルダの削除
-```
-sudo rm -rf ./DHT11_Python
+python3 example.py
 ```
 
 ## 温湿度センサの情報をディスプレイに表示  
