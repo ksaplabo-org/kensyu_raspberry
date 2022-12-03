@@ -25,25 +25,12 @@ AWSIoT_ENDPOINT = "alij9rhkrwgll-ats.iot.ap-northeast-1.amazonaws.com"
 MQTT_PORT = 8883
 MQTT_TOPIC_PUB = "topicAirCondition"
 MQTT_TOPIC_SUB = "topicAirConditionSub"
-MQTT_ROOTCA = "/home/pi/Downloads/AmazonRootCA1.pem"
-MQTT_CERT = "/home/pi/Downloads/512a3534fac6e4946d4ae75ba7032248f41e898920156a0f0a68a4deb58c4f3a-certificate.pem.crt"
-MQTT_PRIKEY = "/home/pi/Downloads/512a3534fac6e4946d4ae75ba7032248f41e898920156a0f0a68a4deb58c4f3a-private.pem.key"
+MQTT_ROOTCA = "/home/pi/Desktop/AmazonRootCA1.pem"
+MQTT_CERT = "/home/pi/Desktop/30798132e0e9b6f7f52e181076f378c530c33a0741d6cbd5329b5a4bf277fd14-certificate.pem.crt"
+MQTT_PRIKEY = "/home/pi/Desktop/30798132e0e9b6f7f52e181076f378c530c33a0741d6cbd5329b5a4bf277fd14-private.pem.key"
 
 # 温湿度センサ(DHT11)で14ピンを使うよという宣言
 instance = dht11.DHT11(pin=14)
-
-# MQTT接続時のイベント処理
-def mqtt_connect(client, userdata, flags, respons_code):
-    print('mqtt connected.') 
-    # Entry Mqtt Subscribe.
-    client.subscribe(MQTT_TOPIC_SUB)
-    print('subscribe topic : ' + MQTT_TOPIC_SUB) 
-
-# サブスクライブ時のイベント処理
-def mqtt_message(client, userdata, msg):
-    # Get Received Json Data 
-    json_dict = json.loads(msg.payload)
-    # if use ... json_dict['xxx']
 
 # ループ処理
 async def pub_loop():
@@ -86,9 +73,8 @@ async def pub_loop():
 if __name__ == '__main__':
     # Mqttクライアントの初期化
     client = paho.mqtt.client.Client()
-    # コールバック関数の定義
-    client.on_connect = mqtt_connect
-    client.on_message = mqtt_message
+    
+    # Mqttクライアントの接続設定
     client.tls_set(MQTT_ROOTCA, certfile=MQTT_CERT, keyfile=MQTT_PRIKEY, cert_reqs=ssl.CERT_REQUIRED, tls_version=ssl.PROTOCOL_TLSv1_2, ciphers=None)
 
     # MQTTブローカーとの接続
